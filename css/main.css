@@ -1,3 +1,8 @@
+@font-face {
+    font-family: 'AlarmClock';
+    src: url('/fonts/alarm_clock.ttf') format('truetype');
+}
+
 /* Ensure the body and HTML elements take up the full viewport and prevent overflow */
 html, body {
     width: 100%;
@@ -136,7 +141,8 @@ video {
     top: 10px; /* Keep it at the top */
     left: 50%;
     transform: translateX(-50%); /* Center horizontally */
-    font-size: 24px;
+    font-size: 48px;
+    font-family: 'AlarmClock', sans-serif;
     color: #fff;
     background: rgba(0, 0, 0, 0.7);
     padding: 10px 20px;

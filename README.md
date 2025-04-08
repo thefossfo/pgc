@@ -11,3 +11,11 @@ The window is broken up into 4 quads, each one displaying relevant information a
 |---|---|
 | 1 | 2 |
 | 3 | 4 |
+
+### Quad 1
+
+### Quad 2
+
+### Quad 3
+
+### Quad 4

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR GPS App</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        #camera-stream {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        }
+        #debug-info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            z-index: 3;
+        }
+        #arrow-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 4; /* Ensure the arrow is on top */
+            pointer-events: none; /* Allow interaction with underlying elements */
+        }
+    </style>
+</head>
+<body>
+    <video id="camera-stream" autoplay playsinline></video>
+    <div id="debug-info">
+        <div>GPS: <span id="gps-coordinates">Loading...</span></div>
+        <div>Heading: <span id="device-heading">Loading...</span></div>
+        <div>Adjusted Bearing: <span id="adjusted-bearing">Loading...</span></div>
+    </div>
+    <div id="arrow-container"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        let currentStream;
+        let deviceHeading = 0;
+        let targetBearing = 0;
+        let gpsLoaded = false;
+
+        // Define target coordinates
+        const targetLatitude = 28.13866930564315;
+        const targetLongitude = -81.63426956611073;
+
+        async function startCamera() {
+            try {
+                currentStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: "environment" } } });
+                document.getElementById('camera-stream').srcObject = currentStream;
+                document.getElementById('camera-stream').style.display = 'block';
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+                alert('Error accessing camera: ' + error.message);
+            }
+        }
+
+        function requestGPSPermission() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const { latitude, longitude } = position.coords;
+                    document.getElementById('gps-coordinates').textContent = `${latitude}, ${longitude}`;
+                    gpsLoaded = true;
+                    updateARPosition(latitude, longitude, targetLatitude, targetLongitude);
+                    watchGPSPosition();
+                }, error => {
+                    console.error('Error getting GPS permission:', error);
+                });
+            } else {
+                console.error('Geolocation is not supported by this browser.');
+            }
+        }
+
+        function watchGPSPosition() {
+            navigator.geolocation.watchPosition(position => {
+                const { latitude, longitude } = position.coords;
+                document.getElementById('gps-coordinates').textContent = `${latitude}, ${longitude}`;
+                gpsLoaded = true;
+                updateARPosition(latitude, longitude, targetLatitude, targetLongitude);
+            });
+        }
+
+        function getLocationAndOrientation() {
+            requestGPSPermission();
+
+            window.addEventListener('deviceorientation', event => {
+                deviceHeading = event.alpha;
+                document.getElementById('device-heading').textContent = deviceHeading.toFixed(2);
+                if (gpsLoaded) {
+                    updateArrowDirection();
+                }
+            });
+        }
+
+        function calculateBearing(lat1, lon1, lat2, lon2) {
+            const toRadians = degrees => degrees * Math.PI / 180;
+            const toDegrees = radians => radians * 180 / Math.PI;
+
+            const dLon = toRadians(lon2 - lon1);
+            const y = Math.sin(dLon) * Math.cos(toRadians(lat2));
+            const x = Math.cos(toRadians(lat1)) * Math.sin(toRadians(lat2)) -
+                      Math.sin(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.cos(dLon);
+            let bearing = toDegrees(Math.atan2(y, x));
+            bearing = (bearing + 360) % 360; // Normalize to 0-360 degrees
+            return bearing;
+        }
+
+        function updateARPosition(lat1, lon1, lat2, lon2) {
+            targetBearing = calculateBearing(lat1, lon1, lat2, lon2);
+            updateArrowDirection();
+        }
+
+        function updateArrowDirection() {
+            const adjustedBearing = (targetBearing - deviceHeading + 360) % 360;
+            document.getElementById('adjusted-bearing').textContent = adjustedBearing.toFixed(2);
+            arrow.rotation.z = THREE.Math.degToRad(adjustedBearing);
+        }
+
+        // Start the camera and get location/orientation data
+        startCamera();
+        getLocationAndOrientation();
+
+        // Three.js setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('arrow-container').appendChild(renderer.domElement);
+
+        // Create a 3D arrow
+        const arrowGeometry = new THREE.ConeGeometry(0.5, 2, 32);
+        const arrowMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        const arrow = new THREE.Mesh(arrowGeometry, arrowMaterial);
+        arrow.position.set(0, 0, -5);
+        scene.add(arrow);
+
+        camera.position.z = 5;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>

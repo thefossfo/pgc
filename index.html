@@ -1,0 +1,44 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PGC v0.1</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="js/youtube.js" defer></script>
+    <script src="js/camera.js" defer></script>
+    <script src="js/launch_data.js" defer></script>
+    <script src="js/user_data.js" defer></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div id="quad_container" class="quad_container">
+        <div id="quad_upper_left" class="quad">
+            <select id="live-streams"><option>Loading live stream list...</option></select>
+            <div id="live-stream"></div>
+        </div>
+        <div id="quad_upper_right" class="quad">
+            <div id="camera-view">
+                <video autoplay></video>
+                <div id="controls">
+                    <select id="videoSource"></select>
+                    <button id="zoomIn">+</button>
+                    <button id="zoomOut">-</button>
+                    <button id="resetZoom">Reset</button>
+                </div>
+                <div id="zoomLevelDisplay">1x</div>
+                <div id="countdown-timer">T-00:00:00</div>
+            </div>
+        </div>
+        <div id="quad_bottom_left" class="quad">
+            <h2 class="quad_header">Launch Data</h2>
+            <select id="launch-list"><option>Loading launch list...</option></select>
+            <div id="launch-details"></div>
+        </div>
+        <div id="quad_bottom_right" class="quad">
+            <h2 class="quad_header">Your Data</h2>
+            <div id="user-data"></div>
+        </div>
+    </div>
+    <div id="logo"><img src="images/pgc_ai.png"></div>
+</body>
+</html>

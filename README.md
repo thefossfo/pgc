@@ -1,7 +1,7 @@
 # Personal Ground Control (PGC)
 
 ## About
-The Personal Ground Control System, or PGC, aims to enable everyday users as well as hobby rocket enthusiasts and even professionals with minimal funding to monitor rocket launches like the pros. It is designed to highly modular and confiurable to quickly and easily adapt to a variety of use cases.
+The Personal Ground Control System, or PGC, aims to enable everyday users as well as hobby rocket enthusiasts and even professionals with minimal funding to monitor rocket launches like the pros. It is designed to be highly modular and confiurable to quickly and easily adapt to a variety of use cases.
 
 ## Existing features
 The beta setup for PGC consists of a screen and a camera. That could be a phone, tablet, etc, but the prototype uses a laptop and a USB webcam. It uses Apache Web Server to serve static HTML, CSS and JavaScript that is displayed in a fullscreen browser window. It is designed to monitor *public* rocket launches, but with a little tweaking could be modified for private/personal launches.
@@ -35,3 +35,6 @@ Eventually, the camera on the beta setup will incorporate a Pan-Tilt Unit, that 
 
 ### Automatic launchpad detection
 Using the Pan-Tilt Unit, as well as GPS and compass data, the beta setup will be able to calculate it's relevant location to the launch pad and automatically find and zoom in on it.
+
+### AI Enabled Tracking
+Once the pan tilt unit has been implemented and tested, the next phase will be to implement AI enabled tracking of the launch, and in conjunction with AR will be able to calculate the rocket's speed and trajectory and possibly even compare it with planned flight data and calculate variances. Data like this could be aggregrated into a server, and with the help of multiple PGC modules from varying locations, the data could provide valuable insights about the launch that might not have been noticed or tracked elsewhere.

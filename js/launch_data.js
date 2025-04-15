@@ -72,11 +72,12 @@ function fetchCurrentWeatherData(latitude, longitude) {
         dataType: 'json',
         success: function(data) {
             const temperatureC = data.current_weather.temperature;
-            const windSpeed = data.current_weather.windspeed;
+            const windSpeedKph = data.current_weather.windspeed;
+            const windSpeedMph = (windSpeedKph * 0.621371).toFixed(2); // Convert to mph
             const windDirection = data.current_weather.winddirection;
             const precipitation = data.current_weather.precipitation !== undefined ? data.current_weather.precipitation : 'N/A';
             const weatherCode = data.current_weather.weathercode;
-            displayWeatherData(temperatureC, windSpeed, windDirection, precipitation, weatherCode, 'current');
+            displayWeatherData(temperatureC, windSpeedKph, windSpeedMph, windDirection, precipitation, weatherCode, 'current');
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.error('Error fetching weather data:', textStatus, errorThrown);
@@ -94,11 +95,12 @@ function fetchForecastWeatherData(latitude, longitude, launchDate) {
         success: function(data) {
             const forecast = data.hourly;
             const temperatureC = forecast.temperature_2m[0];
-            const windSpeed = forecast.windspeed_10m[0];
+            const windSpeedKph = forecast.windspeed_10m[0];
+            const windSpeedMph = (windSpeedKph * 0.621371).toFixed(2); // Convert to mph
             const windDirection = forecast.winddirection_10m[0];
             const precipitation = forecast.precipitation[0];
             const weatherCode = forecast.weathercode[0];
-            displayWeatherData(temperatureC, windSpeed, windDirection, precipitation, weatherCode, 'forecast');
+            displayWeatherData(temperatureC, windSpeedKph, windSpeedMph, windDirection, precipitation, weatherCode, 'forecast');
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.error('Error fetching weather data:', textStatus, errorThrown);
@@ -107,13 +109,13 @@ function fetchForecastWeatherData(latitude, longitude, launchDate) {
 }
 
 // Function to display weather data
-function displayWeatherData(temperatureC, windSpeed, windDirection, precipitation, weatherCode, type) {
+function displayWeatherData(temperatureC, windSpeedKph, windSpeedMph, windDirection, precipitation, weatherCode, type) {
     const temperatureF = (temperatureC * 9/5) + 32;
     const compassDirection = getCompassDirection(windDirection);
     const weatherCondition = getWeatherCondition(weatherCode);
     const weatherDetails = `
         <p><strong>Air Temperature:</strong> ${temperatureC}°C / ${temperatureF.toFixed(1)}°F</p>
-        <p><strong>Wind Speed:</strong> ${windSpeed} m/s</p>
+        <p><strong>Wind Speed:</strong> ${windSpeedKph} km/h (${windSpeedMph} mph)</p>
         <p><strong>Wind Direction:</strong> ${compassDirection} (${windDirection}°)</p>
         <p><strong>Precipitation:</strong> ${precipitation} mm</p>
         <p><strong>Weather Condition:</strong> ${weatherCondition}</p>

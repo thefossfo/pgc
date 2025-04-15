@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'AlarmClock';
-    src: url('/fonts/alarm_clock.ttf') format('truetype');
+    src: url('/pgc/fonts/alarm_clock.ttf') format('truetype');
 }
 
 /* Ensure the body and HTML elements take up the full viewport and prevent overflow */

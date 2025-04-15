@@ -53,37 +53,39 @@ function calculateSoundTravelTime(distance_km, air_temp_c, wind_speed_m_s) {
     return time_seconds;
 }
 
+
 // Fetch current weather data for the user's location
 function fetchUserWeatherData(latitude, longitude) {
-    const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`;
-    $.ajax({
-        url: weatherApiUrl,
-        method: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            const temperatureC = data.current_weather.temperature;
-            const windSpeed = data.current_weather.windspeed;
-            const windDirection = data.current_weather.winddirection;
-            const precipitation = data.current_weather.precipitation !== undefined ? data.current_weather.precipitation : 'N/A';
-            const weatherCode = data.current_weather.weathercode;
-            displayUserWeatherData(temperatureC, windSpeed, windDirection, precipitation, weatherCode);
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            console.error('Error fetching weather data:', textStatus, errorThrown);
-        }
-    });
+    const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`;
+    $.ajax({
+        url: weatherApiUrl,
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            const temperatureC = data.current_weather.temperature;
+            const windSpeedKph = data.current_weather.windspeed;
+            const windSpeedMph = (windSpeedKph * 0.621371).toFixed(2); // Convert to mph
+            const windDirection = data.current_weather.winddirection;
+            const precipitation = data.current_weather.precipitation !== undefined ? data.current_weather.precipitation : 'N/A';
+            const weatherCode = data.current_weather.weathercode;
+            displayUserWeatherData(temperatureC, windSpeedKph, windSpeedMph, windDirection, precipitation, weatherCode);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('Error fetching weather data:', textStatus, errorThrown);
+        }
+    });
 }
 
 // Display user weather data
-function displayUserWeatherData(temperatureC, windSpeed, windDirection, precipitation, weatherCode) {
-    $('#user-weather').html(`
-        <h4>Current Weather at Your Location:</h4>
-        <p>Temperature: ${temperatureC}°C</p>
-        <p>Wind Speed: ${windSpeed} kph</p>
-        <p>Wind Direction: ${windDirection}°</p>
-        <p>Precipitation: ${precipitation}</p>
-        <p>Weather Code: ${weatherCode}</p>
-    `);
+function displayUserWeatherData(temperatureC, windSpeedKph, windSpeedMph, windDirection, precipitation, weatherCode) {
+    $('#user-weather').html(`
+	<h4>Current Weather at Your Location:</h4>
+	<p>Temperature: ${temperatureC}°C</p>
+	<p>Wind Speed: ${windSpeedKph} km/h (${windSpeedMph} mph)</p>
+	<p>Wind Direction: ${windDirection}°</p>
+	<p>Precipitation: ${precipitation}</p>
+	<p>Weather Code: ${weatherCode}</p>
+    `);
 }
 
 // Fetch sunrise and sunset times for the user's location

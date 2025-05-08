@@ -47,6 +47,7 @@ function populateLaunchList() {
     $launchList.empty();
     $launchList.append('<option value="">Select a launch...</option>');
     launchesData.forEach(launch => {
+	    console.log("Launch ID: "+launch.id);
         launchDate = new Date(launch.net || launch.window_start).toLocaleString(); // Assign value to global variable
         const launchLocation = launch.pad.location.name;
         const option = $('<option>')
